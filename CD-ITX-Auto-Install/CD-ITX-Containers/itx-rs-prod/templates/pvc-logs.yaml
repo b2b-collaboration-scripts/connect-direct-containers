@@ -1,0 +1,31 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: itx-rs-pvc-logs
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.logs.accessMode }}
+  {{- if .Values.persistence.logs.useDynamicProvisioning }}
+  {{- if .Values.persistence.logs.storageClassName }}
+  storageClassName: {{ .Values.persistence.logs.storageClassName }}
+  {{- end }}
+  {{- else }}
+  storageClassName: {{ .Values.persistence.logs.storageClassName }}
+  {{- if .Values.persistence.logs.matchVolumeLabel.name }}
+  selector:
+    matchLabels:
+      {{ .Values.persistence.logs.matchVolumeLabel.name }}: {{ .Values.persistence.logs.matchVolumeLabel.value }}
+  {{- end }}
+  {{- end }}
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logs.capacity }}

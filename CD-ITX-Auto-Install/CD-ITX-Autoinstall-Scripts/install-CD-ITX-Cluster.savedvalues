@@ -1,0 +1,8 @@
+INSTALL_BASE_DIR="/Users/alousta@us.ibm.com/Documents/zz_bash/connect-direct-containers/CD-ITX-Auto-Install"
+AdminEmailAddress="alousta@us.ibm.com"
+ReleaseName="cd6001"
+NameSpace="zero100"
+IngressSubDomain="sterling-us-industrial-1e1d4b4b0ece20fd1acc4fecd26bc5c9-0000.us-east.containers.appdomain.cloud"
+EntitlementKeyFileName="CD-ITX-Autoinstall-Scripts/tools/entitlement/ibm-entitlement-key.txt"
+CDHelmChartName="ibm-connect-direct-1.2.7"
+ITXHelmChartName="itx-rs-prod-2.0.0"

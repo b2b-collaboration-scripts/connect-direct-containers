@@ -1,0 +1,36 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+{{- if (.Capabilities.APIVersions.Has "route.openshift.io/v1") }}
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "itx.rs.routeName" . | quote }}
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  port:
+    {{- if .Values.ssl.enabled }}
+    targetPort: tcp-https
+    {{- else }}
+    targetPort: tcp-http
+    {{- end }}
+  {{- if .Values.ssl.enabled }}
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: None
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "itx.rs.serviceName" . | quote }}
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress: []
+{{- end }}
+{{- end }}

@@ -1,0 +1,540 @@
+## Metadata for ITX Runtime Server configuration settings in values.yaml
+
+## License
+license:
+  __metadata:
+    label: "License"
+    description: "Licensing"
+  accept:
+    __metadata
+      description: "License must be accepted. Please refer to: https://ibm.biz/ITX_License1011"
+      type: boolean
+      required: true
+
+## General
+general:
+  __metadata:
+    label: "General"
+    description: "General settings"
+  ## Service Account
+  serviceAccountName:
+    __metadata:
+      label: "Service Account Name"
+      description: "Service account name to use, or empty string to use the default service account"
+      type: string
+      required: false 
+  ## Replicas configuration
+  replicaCount:
+    __metadata:
+      label: "Replica Count"
+      description: "Number of pod replicas to deploy and run simultaneously"
+      type: "number"
+      required: true
+  ## Environment configuration
+  env:
+    __metadata:
+      label: "Environment"
+      description: "Name of an optional configmap object with environment variables"
+      type: "string"
+      required: false
+  # Run mode configuration
+  runMode:
+    __metadata:
+      label: "Run Mode"
+      description: "Runtime mode of the server, which can be Fenced for running the REST and engine processes separately, and Unfenced, for running them in the same process"
+      options:
+      - label: 'Unfenced'
+        value: 'unfenced'
+      - label: 'Fenced'
+        value: 'fenced'
+  # Worker node selector
+  matchNodeLabel:
+    __metadata:
+      label: "Match Node Label"
+      description: "Name and value of the label of the worker nodes to which the pods must be deployed"
+    name:
+      __metadata:
+        label: "Name"
+        description: "Name of the label of the worker nodes to which the pods must be deployed"
+    value:
+      __metadata:
+        label: "Value"
+        description: "Value of the label assigned to the nodes to which the must should be deployed"
+    
+## Image configuration
+image:
+  __metadata:
+    label: "Image Settings"
+    description: "Image identity and pull operation settings"
+  repository:
+    __metadata:
+      label: "Repository"
+      description: "Image registry and repository name"
+  digest:
+    __metadata:
+      label: "Digest"
+      description: "Image digest value, which takes priority over image tag value"
+  tag:
+    __metadata:
+      label: "Tag"
+      description: "Image tag value"
+  pullPolicy:
+    __metadata:
+      label: "Pull Policy"
+      description: "Kubernetes policy for pulling images from the registry"
+      options:
+      - label: 'Always'
+        value: 'Always'
+      - label: 'Never'
+        value: 'Never'
+      - label: 'IfNotPresent'
+        value: 'IfNotPresent'
+  secret:
+    __metadata:
+      label: "Pull Secret"
+      description: "Name of the Kubernetes image pull secret resource for pulling images from the registry, or empty value to not use image pull secret"
+      type: "string"
+      required: false
+  
+# Probes configuration
+probes:
+  __metadata:
+    label: "Probe Settings"
+    description: "Settings for liveness and readiness probes in the server"
+  liveness:
+    enabled:
+      __metadata:
+        label: "Enable"
+        description: "Enable liveness probe" 
+        type: "boolean"
+    initialDelaySeconds:
+      __metadata:
+        label: "Initial Delay in Seconds"
+        description: "Delay, in seconds, to wait before making the first liveness probe call"
+        type: "number"
+    periodSeconds:
+      __metadata:
+        label: "Period in Seconds"
+        description: "Duration, in seconds, to wait between the subsequent liveness probe calls"
+        type: "number"
+    timeoutSeconds:
+      __metadata:
+        label: "Timeout in Seconds"
+        description: "Number of seconds after which the liveness probe call times out"
+        type: "number"		
+  readiness:
+    enabled:
+      __metadata:
+        label: "Enable"
+        description: "Enable readiness probe" 
+        type: "boolean"
+    initialDelaySeconds:
+      __metadata:
+        label: "Initial Delay in Seconds"
+        description: "Delay, in seconds, to wait before making the first readiness probe call"
+        type: "number"
+    periodSeconds:
+      __metadata:
+        label: "Period in Seconds"
+        description: "Duration, in seconds, to wait between the subsequent readiness probe calls"
+        type: "number"
+    timeoutSeconds:
+      __metadata:
+        label: "Timeout in Seconds"
+        description: "Number of seconds after which the readiness probe call times out"
+        type: "number"			
+
+# Map configuration
+map:
+  __metadata:
+    label: "Map Run Settings"
+    descriptions: "Configuration settings for the map run operations"
+  fileExtension:
+    __metadata:
+      label: "File Extension"
+      description: "File extension of the compiled map files, such as for example lnx, in which case files with .lnx are treated as compiled map files"
+  unloadTimeMinutes:
+    _metadata:
+      label: "Unload Time in Minutes"
+      description: "Time, in minutes, to cache loaded compiled maps in memory before removing them from the memory"
+      type: "number"
+  maxThreads:
+    __metadata:
+      label: "Max Threads"
+      description: "The upper limit for the number of threads to allocate for running maps"
+      type: "number"
+  syncTimeoutSeconds:
+    _metadata:
+      label: "Synchronous Timeout in Seconds"
+      description: "Timeout, in Seconds, for synchronous map execution"
+      type: "number"
+  disableCaching: 
+    _metadata:
+      label: "Disable map caching"
+      description: "Disable map caching in the Runtime Server"
+	  type: "boolean"	
+  allAttachments: 
+    _metadata:
+      label: "Include all attachments"
+      description: "Include all attachments in multi-part body response"
+	  type: "boolean"		  
+
+# Logging configuration
+log:
+  __metadata:
+    label: "Log Settings"
+    description: "Settings for the log operations"
+  includeHostInLogNames:
+    label: "Include Host In Log Names"
+    description: "Include current host name in the generated log file names"
+    type: "boolean"
+  accessLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for access log messages"
+        options:
+        - label: 'None'
+          value: 'none'
+        - label: 'All'
+          value: 'all'
+    days:
+      __metadata:
+        label: "Duration in Days"
+        description: "Number of days to keep access logs, or -1 for unlimited time"
+        type: "number"
+  serverLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for server log messages"
+        options:
+        - label: 'None'
+          value: 'none'
+        - label: 'Failures'
+          value: 'failures'
+        - label: 'Info'
+          value: 'info'
+        - label: 'All'
+          value: 'all'
+    days:
+      label: "Duration in Days"
+      description: "Number of days to keep server logs, or -1 for unlimited time"
+      type: "number"
+  serviceLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for service log messages"
+        options:
+        - label: 'None'
+          value: 'none'
+        - label: 'Failures'
+          value: 'failures'
+        - label: 'Info'
+          value: 'info'
+        - label: 'All'
+          value: 'all'
+    days:
+      __metadata:
+        label: "Duration in Days"
+        description: "Number of days to keep service logs, or -1 for unlimited time"
+        type: "number"
+    stdErr:
+      __metadata:
+        label: "Log To Standard Error"
+        description: "Write service log messages to the standard error stream in addition to writing them to the log file"
+        type: "boolean"
+  execLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for execution log messages"
+      options:
+      - label: 'None'
+        value: 'none'
+      - label: 'Failures'
+        value: 'failures'
+      - label: 'Info'
+        value: 'info'
+      - label: 'All'
+        value: 'all'
+      fileCount:
+        __metadata:
+          label: "File Count"
+          description: "Number of files to keep in the circular execution log"
+          type: "number"
+      fileSizeKiB:
+        __metadata:
+          label: "File Size in Kilobytes"
+          description: "Size, in kilobytes, of a log file, which when exceeded results in creating a new file"
+          type: "number"
+      stdErr:
+        __metadata:
+          label: "Log To Standard Error"
+          description: "Write execution log messages to the standard error stream in addition to writing them to the log file"
+  jniLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for JNI (Java Native Interface) log messages"
+        options:
+        - label: 'None'
+          value: 'none'
+        - label: 'Failures'
+          value: 'failures'
+        - label: 'Info'
+          value: 'info'
+        - label: 'All'
+          value: 'all'
+  cmgrLog:
+    level:
+      __metadata:
+        label: "Level"
+        description: "Severity level threshold for Connection Manager log messages"
+        options:
+        - label: 'None'
+          value: 'none'
+        - label: 'Failures'
+          value: 'failures'
+        - label: 'Info'
+          value: 'info'
+        - label: 'All'
+          value: 'all'
+
+# Resource registry configuration
+resourceRegistry:
+  __metadata:
+    label: "Resource Registry"
+    description: "Resource registry settings"
+  configFile:
+    __metadata:
+      label: "Configuration File"
+      description: "Full path to the resource registry file in the data volume filesystem"
+
+# Redis configuration
+redis:
+  __metadata:
+    label: "Redis Settings"
+    description: "Redis service settings, applicable when running server in Fenced run mode, or if caching of catalog entries is enabled"
+  host:
+    __metadata:
+      label: "Host Name"
+      description: "Redis server host name"
+  port:
+    __metadata:
+      label: "Port Number"
+      description: "Redis port number, with the default value of 6379"
+      type: "number"
+  timeoutSeconds:
+    __metadata:
+      label: "Connection Timeout in Seconds"
+      description: "Timeout, in seconds, for establishing Redis connections"
+      type: "number"
+  secret:
+    __metadata:
+      label: "Secret"
+      description: "Name of the Secret object with the Base64-encoded Redis password, if password is required for establishing connection"
+  stem:
+    __metadata:
+      label: "Stem"
+      description: "Prefix to use for all Redis key names produced and consumed by the server"
+  catalogCacheEnabled:
+    __metadata:
+      label: "Enable Catalog Cache"
+      description: "Enable Redis caching of map catalog entries"
+
+## Resources configuration
+resources:
+  __metadata:
+    label: "Resource Constraints"
+    description: "Resource quota constraints for the running containers"
+  enabled:
+    __metadata:
+      label: "Enable"
+      description: "Enable CPU and memory resource quota constraints"
+      type: "boolean"
+      required: true
+  requests:
+    cpu:
+      __metadata:
+        label: "CPU"
+        description: "Requested number of CPU cores, as integers or fractions, where integers with the m suffix indicate millicores, for example 1000m for 1 core"
+    memory:
+      __metadata:
+        label: "Memory"
+        description: "Requested memory in bytes, as integers with base-10 suffix (E, P, T, G, M, K) or base-2 suffix (Ei, Pi, Ti, Gi, Mi, Ki)"
+  limits:
+    cpu:
+      __metadata:
+        label: "CPU"
+        description: "Upper limit for CPU cores, as integers or fractions, where integers with the m suffix indicate millicores, for example 1000m for 1 core"
+    memory:
+      __metadata:
+        label: "Memory"
+        description: "Upper memory limit in bytes, as integers with base-10 suffix (E, P, T, G, M, K) or base-2 suffix (Ei, Pi, Ti, Gi, Mi, Ki)"
+      
+# Persistent volumes configuration
+persistence:
+  __metadata:
+    label: "Persistent Volumes"
+    description: "Settings for provisioning persistent volumes used by the server"
+  fsGroup:
+    __metadata:
+      label: "Filesystem Group"
+      description: "Filesystem group id to use for persistent volume operations, when not managed by the cluster"  
+  data:
+    capacity:
+      __metadata:
+        label: "Capacity"
+        description: "Capacity to request for the data persistent volume, with suffixes M, G, T user for base-ten sizes, and Mi, Ti, Gi for base-2 sizes"
+    accessMode:
+      __metadata:
+        label: "Access Mode"
+        description: "Access mode for the data persistent volume"
+        options:
+        - label: 'ReadWriteOnce'
+          value: 'ReadWriteOnce'
+        - label: 'ReadWriteMany'
+          value: 'ReadWriteMany'
+    useDynamicProvisioning:
+      __metadata:
+        label: "Use Dynamic Provisioning"
+        description: "Request dynamic provisioning for the data persistent volume"
+        type: "boolean"
+    storageClassName:
+      __metadata:
+        label: "Storage Class"
+        description: "Storage class name for dynamically provisioned data persistent volume, or empty value for the default storage class name handling in the cluster"
+    matchVolumeLabel:
+      name:
+        __metadata:
+          label: "Name"
+          description: "Name of the label of the data persistent volume for which to make claim"
+      value:
+        __metadata:
+          label: "Value"
+          description: "Value of the label of the data persistent volume for which to make claim"
+  logs:
+    capacity:
+      __metadata:
+        label: "Capacity"
+        description: "Capacity to request for the logs persistent volume, with suffixes M, G, T user for base-ten sizes, and Mi, Ti, Gi for base-2 sizes"
+    accessMode:
+      __metadata:
+        label: "Access Mode"
+        description: "Access mode for the logs persistent volume"
+        options:
+        - label: 'ReadWriteOnce'
+          value: 'ReadWriteOnce'
+        - label: 'ReadWriteMany'
+          value: 'ReadWriteMany'
+    useDynamicProvisioning:
+      __metadata:
+        label: "Use Dynamic Provisioning"
+        description: "Request dynamic provisioning for the logs persistent volume"
+        type: "boolean"
+    storageClassName:
+      __metadata:
+        label: "Storage Class"
+        description: "Storage class name for dynamically provisioned logs persistent volume, or empty value for the default storage class name handling in the cluster"
+    matchVolumeLabel:
+      name:
+        __metadata:
+          label: "Name"
+          description: "Name of the label of the logs persistent volume for which to make claim"
+      value:
+        __metadata:
+          label: "Value"
+          description: "Value of the label of the logs persistent volume for which to make claim"
+ssl:
+  __metadata:
+    label: "SSL Settings"
+    description: "SSL settings for the server"
+  enabled:
+    __metadata:
+      label: "Enabled"
+      description: "Use HTTPS for invoking REST endpoints in the pods"
+      type: "boolean"
+  serviceServingCertificates:
+    __metadata:
+      label: "Service Serving Certificates"
+      description: "Enable OpenShift service serving certificates for securing service traffic inside the cluster"
+      type: "boolean"
+  clientAuth:
+    __metadata:
+      label: "Client Authentication"
+      description: "Enable certificate authentication of the clients making calls to the server endpoints"
+      type: "boolean"
+  secret:
+    __metadata:
+      label: "SSL Secret"
+      description: "Name of the Kubernetes Secret resource containing SSL certificates and keys"
+
+service:
+  __metadata:
+    label: "Service Settings"
+    description: "Settings for the service"
+  type:
+    __metadata:
+      label: "Type"
+      description: "Type of the service to use"
+      options:
+      - label: 'ClusterIP'
+        value: 'ClusterIP'
+      - label: 'NodePort'
+        value: 'NodePort'
+      - label: 'LoadBalancer'
+        value: 'LoadBalancer'
+      - label: 'ExternalName'
+        value: 'ExternalName'
+  port:
+    http:
+      __metadata:
+        label: "HTTP Port"
+        desription: "Port for HTTP traffic, applicable if SSL is not enabled"
+        type: "number"
+    https:
+      __metadata:
+        label: "HTTPS Port"
+        desription: "Port for HTTPs traffic, applicable if SSL is enabled"
+        type: "number"
+
+route:
+  __metadata:
+    label: "Route Settings"
+    description: "Settings for the optional route definition in OpenShift cluster"
+  enabled:
+    _metadata:
+      label: "Enabled"
+      description: "Create and enable a route"
+  host:
+    _metadata:
+      label: "Host"
+      description: "Host value to use for the route, or empty string to use the automatically assigned host value"
+    
+autoscaling:
+  __metadata:
+    label: "Horizontal Pod Autoscaler Settings"
+    description: "Settings for the optional horizontal pod autoscaler definition"
+    type: "boolean"	
+  enabled: 
+    _metadata:
+      label: "Enable Horizontal Pod AutoScaler"
+      description: "Create and enable horizontal pod autoscaler"
+  minReplicas:
+    _metadata:
+      label: "Minimum Replicas"
+      description: "Minimum number of replicas to which to scale down"
+  maxReplicas: 
+    _metadata:
+      label: "Maximum Replicas"
+      description: "Maximum number of replicas to which to scale up"
+  targetCPUUtilizationPercentage:
+    _metadata:
+      label: "Target CPU Utilization"
+      description: "Target percentage of CPU utilization for autoscaling of pods"
+  targetMemoryUtilizationPercentage:
+    _metadata:
+      label: "Target Memory Utilization"
+      description: "Target percentage of memory utilization for autoscaling of pods"

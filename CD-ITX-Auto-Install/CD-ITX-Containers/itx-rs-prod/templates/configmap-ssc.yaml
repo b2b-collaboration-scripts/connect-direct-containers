@@ -1,0 +1,17 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+{{- if and .Values.ssl.enabled .Values.ssl.serviceServingCertificates }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: itx-rs-config-ssc
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
+data:
+{{- end }}

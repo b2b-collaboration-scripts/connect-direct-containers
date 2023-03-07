@@ -1,0 +1,19 @@
+apiVersion: v2
+appVersion: 10.1.1.1
+description: 'Documentation Helm chart for IBM Sterling Transformation Extender for
+  Red Hat OpenShift License License must be accepted. Please refer to: https://ibm.biz/ITX_License1011'
+home: https://www.ibm.com/products/transformation-extender
+keywords:
+- amd64
+- Integration
+- Commercial
+- RHOCP
+- Middleware
+- ITX
+- Transformation Extender
+kubeVersion: '>=1.21.0'
+maintainers:
+- name: IBM
+- name: IBM Sterling Transformation Extender
+name: itx-rs-prod
+version: 2.0.0

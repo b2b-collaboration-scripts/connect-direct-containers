@@ -1,0 +1,5 @@
+images:
+- image: cp.icr.io/cp/ibm-itx-rs@sha256:d6dea7cad255582d091f91c7ab226d819ce105a4146b9ac706d96262dd929afc
+  references:
+  - repository: ibm-itx-rs
+    pull-repository: cp.icr.io/cp/ibm-itx-rs@sha256:d6dea7cad255582d091f91c7ab226d819ce105a4146b9ac706d96262dd929afc

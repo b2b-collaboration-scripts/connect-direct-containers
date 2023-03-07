@@ -1,0 +1,35 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "itx.rs.serviceName" . | quote }}
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+{{- if and .Values.ssl.enabled .Values.ssl.serviceServingCertificates }}
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: {{ .Values.ssl.secret | quote }}
+{{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+{{- if .Values.ssl.enabled }}
+    - port: {{ .Values.service.port.https }}
+      targetPort: {{ .Values.service.port.https }}
+      protocol: TCP
+      name: tcp-https
+{{- else }}      
+    - port: {{ .Values.service.port.http }}
+      targetPort: {{ .Values.service.port.http }}
+      protocol: TCP
+      name: tcp-http
+{{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "itx.rs.appName" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    type: prod
+  sessionAffinity: ClientIP

@@ -1,0 +1,173 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020-2022. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: itx-rs-deployment
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.general.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "itx.rs.appName" . | quote }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        type: prod
+        affinity: itx-rs-server
+{{ include "itx.rs.labels" . | indent 8 }}
+      annotations:
+{{ include "itx.rs.metering" . | indent 8 }}        
+    spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+        {{- if .Values.persistence.fsGroup }}
+        fsGroup: {{ .Values.persistence.fsGroup }}
+        {{- end }}
+      serviceAccountName: {{ .Values.general.serviceAccountName }}
+      {{- if .Values.general.matchNodeLabel.name }}
+      nodeSelector:
+        {{ .Values.general.matchNodeLabel.name }}: {{ .Values.general.matchNodeLabel.value }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: affinity
+                  operator: In
+                  values:
+                  - itx-rs-server
+              topologyKey: kubernetes.io/hostname
+{{ include "itx.rs.affinity" . | indent 8 }}
+      containers:
+      - name: itx-rs
+        image: 
+          {{- if .Values.image.digest }}
+          {{ .Values.image.repository }}@{{ .Values.image.digest }}
+          {{- else }}
+          {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          {{- end }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false     
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          {{- if .Values.resources.enabled }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          {{- end }}
+        envFrom:
+          - configMapRef:
+              name: itx-rs-config
+          {{- if .Values.general.env }}
+          - configMapRef:
+              name: {{ .Values.general.env }}
+          {{- end }}
+          {{- if .Values.redis.secret }}
+          - secretRef:
+              name: {{ .Values.redis.secret }}
+          {{- end }}
+        ports:
+          {{- if .Values.ssl.enabled }}
+          - name: https
+            containerPort: 8443
+            protocol: TCP
+          {{- else }}
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          {{- end }}
+        volumeMounts:
+          - name: itx-rs-vol-data
+            mountPath: /data
+          - name: itx-rs-vol-logs
+            mountPath: /logs
+          {{- if .Values.ssl.enabled }}
+          {{- if .Values.ssl.clientAuth }}
+          - name: itx-rs-vol-ca-crt
+            readOnly: true
+            mountPath: /opt/server/ssl/ca.pem
+            {{- if .Values.ssl.serviceServingCertificates }}
+            subPath: service-ca.crt
+            {{- else }}
+            subPath: ca.crt
+            {{- end }}
+          {{- end }}
+          - name: itx-rs-vol-tls-crt
+            readOnly: true
+            mountPath: /opt/server/ssl/cert.pem
+            subPath: tls.crt
+          - name: itx-rs-vol-tls-key
+            readOnly: true
+            mountPath: /opt/server/ssl/key.pem
+            subPath: tls.key
+          {{- end }}
+        {{- if .Values.probes.liveness.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - /setup/health/liveness.sh
+          initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.probes.readiness.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - /setup/health/readiness.sh
+          initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+        {{- end }}
+      volumes:
+      - name: itx-rs-vol-data
+        persistentVolumeClaim:
+          claimName: itx-rs-pvc-data
+      - name: itx-rs-vol-logs
+        persistentVolumeClaim:
+          claimName: itx-rs-pvc-logs
+      {{- if .Values.ssl.enabled }}
+      {{- if .Values.ssl.clientAuth }}
+      - name: itx-rs-vol-ca-crt
+        {{- if .Values.ssl.serviceServingCertificates }}
+        configMap:
+          name: itx-rs-config-ssc
+          defaultMode: 420
+        {{- else }}
+        secret:
+          secretName: {{ .Values.ssl.secret }}
+          defaultMode: 420 
+        {{- end }}
+      {{- end }}
+      - name: itx-rs-vol-tls-crt
+        secret:
+          secretName: {{ .Values.ssl.secret }}
+          defaultMode: 420
+      - name: itx-rs-vol-tls-key
+        secret:
+          secretName: {{ .Values.ssl.secret }}
+          defaultMode: 420
+      {{- end }}

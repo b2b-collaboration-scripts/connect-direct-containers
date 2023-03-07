@@ -1,0 +1,6 @@
+CDITXServiceAccount="slew01-cd-itx"
+toolkitPV="pvc-ffced3a7-12fe-41e1-a42f-99ae44fd2411"
+Ref4_Server="fsf-sjc0401f-fz.adn.networklayer.com"
+Ref4_Path="/IBM02SEV2112072_151939/data01"
+Ref4_Region="us-south"
+Ref4_Zone="sjc04"

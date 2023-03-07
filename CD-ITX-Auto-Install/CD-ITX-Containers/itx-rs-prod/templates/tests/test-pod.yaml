@@ -1,0 +1,59 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+{{- $helmTest := default "disabled" .Values.helmTestOverride }}
+{{- if ne $helmTest "disabled" }}
+{{ $serviceName := include "itx.rs.serviceName" . }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "itx-rs-pod-test"
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+    type: "test"
+  annotations:
+    helm.sh/hook: test-success
+    helm.sh/hook-delete-policy: hook-succeeded
+spec:
+  serviceAccountName: {{ .Values.general.serviceAccountName }}
+  affinity:
+{{ include "itx.rs.affinity" . | indent 4 }}
+  hostNetwork: false
+  hostPID: false
+  hostIPC: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+  containers:
+    - name: "itx-rs-test"
+      image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+      securityContext:
+        privileged: false
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        {{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+        runAsUser: 1001
+        {{- end }}
+        capabilities:
+          drop:
+          - ALL
+      resources:
+        {{- if .Values.resources.enabled}}
+        requests:
+          cpu: {{ .Values.resources.requests.cpu }}
+          memory: {{ .Values.resources.requests.memory }}
+        limits:
+          cpu: {{ .Values.resources.limits.cpu }}
+          memory: {{ .Values.resources.limits.memory }}
+      {{- end }}
+      command: ["sh", "-xc", "curl -f http://{{ $serviceName }}:8080/itx-rs/v1/version"]
+  {{- if .Values.image.secret }}
+  imagePullSecrets:
+  - name: {{ .Values.image.secret }}
+  {{- end }}
+  restartPolicy: Never
+{{- end }}

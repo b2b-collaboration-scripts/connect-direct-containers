@@ -1,0 +1,3 @@
+ITX Runtime Server deployed successfully
+
+License must be accepted if not done already. Please refer to: https://ibm.biz/ITX_License1011

@@ -1,0 +1,49 @@
+####################################################################
+# Licensed Materials Property of HCL
+# (c) Copyright HCL Technologies Ltd. 2020. All rights reserved.
+# 
+# Trademark of HCL Technologies Limited
+####################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: itx-rs-config
+  labels:
+{{ include "itx.rs.labels" . | indent 4 }}
+data:
+  ITX_RS_LICENSE_ACCEPT: {{ .Values.license.accept | quote }}
+
+  ITX_RS_RUN_MODE: {{ .Values.general.runMode | quote }}
+
+  ITX_RS_MAP_FILE_EXTENSION: {{ .Values.map.fileExtension | quote }}
+  ITX_RS_MAP_UNLOAD_TIME_MINUTES: {{ .Values.map.unloadTimeMinutes | quote }}
+  ITX_RS_MAP_MAX_THREADS: {{ .Values.map.maxThreads | quote }}
+  ITX_RS_MAP_SYNC_TIMEOUT_SECONDS: {{ .Values.map.syncTimeoutSeconds | quote }}
+  ITX_RS_MAP_DISABLE_CACHING: {{ .Values.map.disableCaching | quote }} 
+  ITX_RS_MAP_MULTIPARTBODY_ALLATTACHMENTS: {{ .Values.map.allAttachments | quote }}  
+
+  ITX_RS_LOG_INCLUDE_HOST_IN_LOG_NAMES: {{ .Values.log.includeHostInLogNames | quote }}
+  ITX_RS_LOG_ACCESS_LOG_LEVEL: {{ .Values.log.accessLog.level | quote }}
+  ITX_RS_LOG_ACCESS_LOG_DAYS: {{ .Values.log.accessLog.days | quote }}
+  ITX_RS_LOG_SERVER_LOG_LEVEL: {{ .Values.log.serverLog.level | quote }}
+  ITX_RS_LOG_SERVER_LOG_DAYS: {{ .Values.log.serverLog.days | quote }}
+  ITX_RS_LOG_SERVICE_LOG_LEVEL: {{ .Values.log.serviceLog.level | quote }}
+  ITX_RS_LOG_SERVICE_LOG_DAYS: {{ .Values.log.serviceLog.days | quote }}
+  ITX_RS_LOG_SERVICE_LOG_STD_ERR: {{ .Values.log.serviceLog.stdErr | quote }}
+  ITX_RS_LOG_EXEC_LOG_FILE_COUNT: {{ .Values.log.execLog.fileCount | quote }}
+  ITX_RS_LOG_EXEC_LOG_FILE_SIZE_KIB: {{ .Values.log.execLog.fileSizeKiB | quote }}
+  ITX_RS_LOG_EXEC_LOG_LEVEL: {{ .Values.log.execLog.level | quote }}
+  ITX_RS_LOG_EXEC_LOG_STD_ERR: {{ .Values.log.execLog.stdErr | quote }}
+  ITX_RS_LOG_JNI_LOG_LEVEL: {{ .Values.log.jniLog.level | quote }}
+  ITX_RS_LOG_CMGR_LOG_LEVEL: {{ .Values.log.cmgrLog.level | quote }}
+
+  ITX_RS_RESOURCE_REGISTRY_CONFIG_FILE: {{ .Values.resourceRegistry.configFile | quote }}
+  
+  ITX_RS_REDIS_HOST: {{ .Values.redis.host | quote }}
+  ITX_RS_REDIS_PORT: {{ .Values.redis.port | quote }}
+  ITX_RS_REDIS_TIMEOUT_SECONDS: {{ .Values.redis.timeoutSeconds | quote }}
+  ITX_RS_REDIS_STEM: {{ .Values.redis.stem | quote }}
+  ITX_RS_REDIS_CATALOG_CACHE_ENABLED: {{ .Values.redis.catalogCacheEnabled | quote }}
+  
+  ITX_RS_SSL_ENABLED: {{ .Values.ssl.enabled | quote }}
+  ITX_RS_SSL_CLIENT_AUTH: {{ .Values.ssl.clientAuth | quote }}
